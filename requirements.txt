@@ -1,1 +1,1 @@
-prettytable~=3.41
+prettytable~=3.4.1
