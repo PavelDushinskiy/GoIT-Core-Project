@@ -1,4 +1,5 @@
 from typing import Tuple, Callable, List, Any
+from re import match
 
 
 class App:
@@ -45,6 +46,42 @@ class App:
         command = user_input[0].lower()
         args = user_input[1:]
         return command, args
+
+
+def phone_is_valid(phone_number: str) -> bool:
+    """
+    Checks if the phone is in the right format.
+
+    :param phone_number: phone number
+    :return: True if matches the format False otherwise
+    """
+    if match(r"(\+?\d{12}|\d{10})", phone_number):
+        return True
+    return False
+
+
+def email_is_valid(email: str) -> bool:
+    """
+    Checks if the email is in the right format.
+
+    :param email: email
+    :return: True if matches the format False otherwise
+    """
+    if match(r"[a-zA-Z][a-zA-Z_.0-9]+@[a-zA-Z_]+?\.[a-zA-Z]{2,}", email):
+        return True
+    return False
+
+
+def birthday_is_valid(date: str) -> bool:
+    """
+    Checks if the birthdate is in the right format.
+
+    :param date: birthdate
+    :return: True if matches the format False otherwise
+    """
+    if match(r"\d{2}\.\d{2}\.\d{4}", date):
+        return True
+    return False
 
 
 class AssistantBot:
@@ -114,11 +151,20 @@ class AssistantBot:
             case "contact":
                 return self.addressbook.add_record(record)
             case "phone":
-                return record.add_phone(args[0])
+                if phone_is_valid(args[0]):
+                    return record.add_phone(args[0])
+                else:
+                    raise ValueError("Phone doesn't match the format +123456789011 or 1234567890.")
             case "email":
-                return record.add_email(args[0])
+                if email_is_valid(args[0]):
+                    return record.add_email(args[0])
+                else:
+                    raise ValueError("Email doesn't seem to be valid.")
             case "birthday":
-                return record.add_birthday(args[0])
+                if birthday_is_valid(args[0]):
+                    return record.add_birthday(args[0])
+                else:
+                    raise ValueError("Enter the date in format dd.mm.yyyy.")
             case "address":
                 return record.add_address(args)
             case _:
