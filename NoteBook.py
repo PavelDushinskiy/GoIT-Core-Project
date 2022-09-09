@@ -26,27 +26,15 @@ class NoteName(Field):
     def value(self, name: str):
         if not isinstance(name, str):
             raise TypeError('The name must be a string!')
-        # if not re.match(r"^[a-zA-Z]{1,25}$", name):
-        #     raise ValueError('The name must contain only letters up to 25 characters long!')
         self._value = name
 
 
 class NoteTag(Field):
     pass
-    # @Field.value.setter
-    # def value(self, tag: str):
-    #     if not isinstance(tag, str):
-    #         raise TypeError('The phone must be a string!')
-    #     self._value = tag
 
 
 class NoteText(Field):
     pass
-    # @Field.value.setter
-    # def value(self, note_text: str):
-    #     if not isinstance(note_text, str):
-    #         raise TypeError('The email must be a string!')
-    #     self._value = note_text
 
 
 class NoteRecord:
@@ -104,17 +92,17 @@ class NoteBook(UserDict):
         except FileNotFoundError:
             return 'File not found!'
 
-    def iterator(self, n=20):
-        step = 0
-        result = '*' * 20 + '\n'
-        for k, v in self.data.items():
-            result += f'{k} {v}\n'
-            step += 1
-            if step >= n:
-                yield result
-                result = '_' * 20 + '\n'
-                step = 0
-        yield result
+    # def iterator(self, n=20):
+    #     step = 0
+    #     result = '*' * 20 + '\n'
+    #     for k, v in self.data.items():
+    #         result += f'{k} {v}\n'
+    #         step += 1
+    #         if step >= n:
+    #             yield result
+    #             result = '_' * 20 + '\n'
+    #             step = 0
+    #     yield result
 
 
 notebook = NoteBook()
