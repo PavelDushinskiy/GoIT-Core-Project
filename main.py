@@ -1,5 +1,8 @@
 from typing import Tuple, Callable, List, Any
 from re import match
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+import sorter
 
 
 class App:
@@ -18,10 +21,15 @@ class App:
         :return: result of running the command by the bot
         """
         bot = AssistantBot()
+        command_completer = WordCompleter([
+            "add contact", "add phone", "add email", "add birthday", "add address", "change phone", "change email",
+            "change address", "remove contact", "show contact", "search contact", "change note", "remove note",
+            "show note", "search note", "birthdays", "sort"
+        ])
 
         try:
             while True:
-                command, args = self.parse_command(input("What do you want to do? "))
+                command, args = self.parse_command(prompt("What do you want to do? ", completer=command_completer))
                 if command in ["goodbye", "close", "exit"]:
                     print("Goodbye!")
                     break
@@ -41,7 +49,7 @@ class App:
         :return: tuple(command, *args)
         """
         if len(user_input) == 0:
-            raise ValueError()
+            raise ValueError("No command is given.")
         user_input = user_input.split()
         command = user_input[0].lower()
         args = user_input[1:]
@@ -97,11 +105,11 @@ class AssistantBot:
             "birthdays": self.check_birthdays,
             "search": self.search,
             "note": self.make_note,
-            "sort": self.sort_folder
+            "sort": self.sort_folder,
+            "help": self.help
         }
         self.addressbook = AddressBook()
         self.notebook = Notebook()
-        self.folder_sorter = Sorter()
 
     @staticmethod
     def input_error(func: Callable) -> Callable[[tuple[Any, ...]], str | Any]:
@@ -190,24 +198,22 @@ class AssistantBot:
                 record = self.addressbook[args[0]]
                 return record.change_address(args[1:])
             case "note":
-                title = args[0]
-                return self.notebook.change_note(title)
+                return self.notebook.change_note(args)
             case _:
                 raise ValueError("Unknown command (type 'phone', 'email', 'address', 'note').")
 
     @input_error
-    def show(self, mode: str, identifier: str) -> str:
+    def show(self, mode: str, *args: str) -> str:
         """
         Returns the record of the given person as a human-readable message or a note by its title.
 
         :param mode: what to show
-        :param identifier: name of a person, title of a note or 'all' to see all notes or contacts
         """
         match mode:
             case "contact":
-                return self.addressbook.show_record(identifier)
+                return self.addressbook.show_record(args)
             case "note":
-                return self.notebook.show_note(identifier)
+                return self.notebook.show_note(args)
             case _:
                 raise ValueError("Unknown command (type 'contact', 'note').")
 
@@ -223,7 +229,7 @@ class AssistantBot:
                 record = self.addressbook[args[0]]
                 return self.addressbook.remove_record(record)
             case "note":
-                return self.notebook.remove_note(args[0])
+                return self.notebook.remove_note(args)
             case _:
                 raise ValueError("Unknown command (type 'contact', 'note').")
 
@@ -239,20 +245,19 @@ class AssistantBot:
         else:
             raise ValueError("Enter a number of days.")
 
-    def search(self, mode: str, needle: str) -> str:
+    def search(self, mode: str, *args: str) -> str:
         """
         Calls and returns a function that searches contacts or notes that have coincidences with the user query.
 
         :param mode: where to search
-        :param needle: letters or digits to search
         :return: contacts or notes that contain given letters or digits
         """
 
         match mode:
             case "record":
-                return self.addressbook.search(needle)
+                return self.addressbook.search(args)
             case "note":
-                return self.notebook.serach(needle)
+                return self.notebook.search(args)
             case _:
                 raise ValueError("Unknown command (type 'contact', 'note').")
 
@@ -260,7 +265,36 @@ class AssistantBot:
         return self.notebook.make_note(args)
 
     def sort_folder(self, path: str):
-        return self.folder_sorter.sort(path)
+        return sorter.sort_folder(path)
+
+    @staticmethod
+    def help():
+        return """
+        To work with contacts type:
+        - add contact name
+        - add phone name phone (in format +123456789011 or 1234567890)
+        - add email name email
+        - add birthday name birthdate (in format dd.mm.yyyy)
+        - add address name address
+        - change phone name old_phone new_phone
+        - change email name new_email
+        - change address name new_address
+        - remove contact name
+        - show contact all/name
+        - search contact name/phone
+        
+        To work with notes type:
+        - change note title
+        - remove note title
+        - show note all/title
+        - search note tag/title
+        
+        To check a list of people who have birthdays in the given interval type:
+        - birthdays num_of_days
+        
+        To sort the given folder type:
+        - sort path
+        """
 
 
 if __name__ == "__main__":
