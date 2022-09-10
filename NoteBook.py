@@ -1,10 +1,10 @@
 from collections import UserDict
-from typing import List
+from typing import Any, List
 from datetime import date
+import re
 import pickle
-from prettytable import PrettyTable
 
-notes = PrettyTable()
+NAME_REGEX = re.compile(r'^[a-zA-Zа-яА-Я0-9,. ]{2,30}$')
 
 
 class Field:
@@ -13,234 +13,220 @@ class Field:
         self.value = value
 
     @property
-    def value(self):
+    def value(self) -> Any:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value) -> None:
         self._value = value
 
 
-class NoteName(Field):
+class Name(Field):
     @Field.value.setter
     def value(self, name: str):
         if not isinstance(name, str):
-            raise TypeError('The name must be a string!')
+            raise TypeError("Name must be a string")
+        if not re.match(NAME_REGEX, name):
+            raise ValueError('Name must be between 2 and 30 characters')
         self._value = name
-
-
-class NoteTag(Field):
-    pass
 
 
 class NoteText(Field):
     pass
 
 
+class NoteTag(Field):
+    pass
+
+
 class NoteRecord:
-    def __init__(self, note_name: NoteName, note_text: NoteText, tag: List[NoteTag] = []) -> None:
-        self.note_name = note_name
-        self.note_text = note_text
-        self.note_tags = tag
+
+    def __init__(self, name: str, text: str, tags: List[str]) -> None:
+        self.name = Name(name)
+        self.text = NoteText(text)
+        self.tags = [NoteTag(tag) for tag in tags]
         self.created = date.today()
-        self.modified = date.today()
 
-    def __repr__(self):
-        return f'{self.note_name.value} {self.note_text.value} {", ".join([p.value for p in self.note_tags])} {self.created} {self.modified} '
+    def __repr__(self) -> str:
+        return f'{self.name.value.title()} # {self.text.value} # {", ".join([p.value for p in self.tags])} # {self.created}'
 
-    def add_tag(self, tag: NoteTag):
-        if tag.value not in [p.value for p in self.note_tags]:
-            self.note_tags.append(tag)
-            self.modified = date.today()
-            return tag
+    def add_teg(self, tag: str) -> None:
+        self.tags.append(NoteTag(tag))
 
-    def remove_tag(self, tag: NoteTag):
-        if tag.value in [p.value for p in self.note_tags]:
-            self.note_tags.remove(tag)
-            self.modified = date.today()
-            return tag
-
-    def change_name(self, name: NoteName):
-        self.note_name = name
-        self.modified = date.today()
-        return name
+    def remove_tag(self, tag: str):
+        for i, tg in enumerate(self.tags):
+            if tg.value == tag:
+                return self.tags.pop(i)
 
 
-class NoteBook(UserDict):
-    def add_note(self, record: NoteRecord) -> NoteRecord | None:
-        if not self.data.get(record.note_name.value):
-            self.data[record.note_name.value] = record
+class Notebook(UserDict):
+
+    def __init__(self, save_file, *args):
+        super().__init__(*args)
+        self.save_file = save_file
+        self.load_data()
+
+    def add_record(self, record: NoteRecord) -> NoteRecord | None:
+        if not self.data.get(record.name.value):
+            self.data[record.name.value] = record
+            self.save_data()
             return record
 
-    def del_note(self, key: str):
-        note_del = self.data.get(key)
-        if note_del:
-            self.data.pop(key)
-            return note_del
+    def save_data(self):
+        with open(self.save_file, 'wb') as f:
+            pickle.dump(self.data, f)
 
-    def find_note(self, note_name: NoteName):
-        return self.data.get(note_name.value)
-
-    def save_file(self):
-        with open('my_NoteBook', 'wb') as f:
-            pickle.dump(self, f)
-
-    def load_file(self):
+    def load_data(self):
         try:
-            with open('my_NoteBook', "rb") as f:
-                self.data = pickle.load(f)
+            with open(self.save_file, 'rb') as f:
+                try:
+                    data = pickle.load(f)
+                    self.data = data
+                except EOFError:
+                    return 'File data is empty'
         except FileNotFoundError:
-            return 'File not found!'
+            return 'File data is empty'
 
-    # def iterator(self, n=20):
-    #     step = 0
-    #     result = '*' * 20 + '\n'
-    #     for k, v in self.data.items():
-    #         result += f'{k} {v}\n'
-    #         step += 1
-    #         if step >= n:
-    #             yield result
-    #             result = '_' * 20 + '\n'
-    #             step = 0
-    #     yield result
+    def show_all_notes(self) -> None:
+        for k, v in self.data.items():
+            print(v)
 
+    def remove_record(self, name):
+        if name in self:
+            del self.data[name]
+            return print(f"Note {name} was deleted successfully!")
+        return print(f"Note {name} not found!")
 
-notebook = NoteBook()
+    def change_name(self, name, new_name):
+        for value in self.data.values():
+            if value.name.value == name:
+                value.name.value = new_name
+                return print(f'Note {name} was changed to {new_name}')
+        return print(f'Note {name} not found!')
 
+    def change_text(self, name, new_text):
+        for value in self.data.values():
+            if value.name.value == name:
+                value.text.value = new_text
+                return print(f'Note {name} was changed to {new_text}')
+        return print(f'Note {name} not found!')
 
-def add_note():
-    name = NoteName(input('Enter note name: '))
-    text = NoteText(input('Enter text: '))
-    tag = NoteTag(input('Enter tag: '))
-    notebook.add_note(NoteRecord(name, text, [tag]))
-    return f"Note {name.value} added!"
-
-
-def show_notes():
-    notes.field_names = ["Title", "Text", "Teg", "Created", "Modified"]
-    for k, v in notebook.data.items():
-        notes.add_row(
-            [v.note_name.value, v.note_text.value, ", ".join([p.value for p in v.note_tags]), v.created, v.modified])
-    return notes
-    # if not notebook:
-    #     return 'NoteBook are empty'
-    # result = "My NoteBook:\n"
-    # print_result = notebook.iterator()
-    # for line in print_result:
-    #     result += line
-    # return result
+    def change_tag(self, name, new_tag):
+        for value in self.data.values():
+            if value.name.value == name:
+                value.tags[0].value = new_tag
+                return print(f'Note {name} was changed to {new_tag}')
 
 
-def to_exit():
-    return 'Good bye!'
+notebook = Notebook('note_data.bin')
+handler_commands = ['make', 'show', 'remove', 'find', 'change', 'exit']
+change_commands = ['name', 'text', 'tag', 'back']
+all_commands = handler_commands + change_commands
 
 
-def change_note_name():
-    name = NoteName(input('Enter note name: '))
-    new_name = NoteName(input('Enter new name: '))
-    note = notebook.find_note(name)
-    if note:
-        note.change_name(new_name)
-        return f"Note {name.value} changed to {new_name.value}!"
-    return f"Note {name.value} not found!"
+# ________________________Notes Handler________________________
+def notes_handler(command):
+    if command == "make" or command == 0:
+        try:
+            print(f"{'=' * 10} Make note please: {'=' * 10}")
+            name = input('Enter name: ').strip()
+            if name in notebook:
+                print(f"Note {name} already exist! Try another name")
+                name = input('Enter name: ').strip()
+            text = input('Enter text: ').strip()
+            tags = input('Enter tags: ').strip().split()
+            note = NoteRecord(name, text, tags)
+            tags_list = tags
+            for tag in tags_list:
+                if tag not in tags_list:
+                    note.add_teg(tag)
+            notebook.add_record(note)
+            print(f"Note {name} was added successfully!")
+            notebook.save_data()
+        except ValueError as e:
+            print(f"Sorry, {e}. Please try again!")
+            return True
+
+    elif command == "show" or command == 1:
+        notebook.show_all_notes()
+        return True
+
+    elif command == "remove" or command == 2:
+        name = input('Enter name: ').title().strip()
+        notebook.remove_record(name)
+        notebook.save_data()
+        return True
+
+    elif command == "find" or command == 3:
+        print("Find a note by tag, name or text")
+        value = input('Enter value: ').strip()
+        result_str = ''
+        for k, v in notebook.data.items():
+            if value in k:
+                result_str += f'{v}\n'
+            for tag in v.tags:
+                if value in tag.value:
+                    result_str += f'{v}\n'
+            if value in v.text.value:
+                result_str += f'{v}\n'
+        print(result_str if result_str else 'Not found!')
+        return True
+
+    elif command == "change" or command == 4:
+        return change_handler(command)
 
 
-def change_note_text():
-    name = NoteName(input('Enter note name: '))
-    new_text = NoteText(input('Enter new text: '))
-    note = notebook.find_note(name)
-    if note:
-        note.note_text = new_text
-        return f"Note {name.value} changed!"
-    return f"Note {name.value} not found!"
+# ________________________Change Handler________________________
+def change_handler(command):
+    if command == "name":
+        name = input('Enter name: ').title().strip()
+        new_name = input('Enter new name: ').title().strip()
+        notebook.change_name(name, new_name)
+        notebook.save_data()
+        return True
 
+    elif command == "text":
+        title = input("Enter title: ").title().strip()
+        new_text = input("Enter new text: ").strip()
+        notebook.change_text(title, new_text)
+        notebook.save_data()
+        return True
 
-def add_tag():
-    name = NoteName(input('Enter note name: '))
-    tag = NoteTag(input('Enter tag: '))
-    note = notebook.find_note(name)
-    if note:
-        note.add_tag(tag)
-        return f"Tag {tag.value} added to {name.value}!"
-    return f"Note {name.value} not found!"
-
-
-def remove_tag():
-    name = NoteName(input('Enter note name: '))
-    tag = NoteTag(input('Enter tag: '))
-    note = notebook.find_note(name)
-    if note:
-        note.remove_tag(tag)
-        return f"Tag {tag.value} removed from {name.value}!"
-    return f"Note {name.value} not found!"
-
-
-def del_note():
-    name = NoteName(input('Enter note name: '))
-    note = notebook.del_note(name.value)
-    if note:
-        return f"Note {name.value} deleted!"
-    return f"Note {name.value} not found!"
-
-
-def find_note():
-    name = NoteName(input('Enter note name: '))
-    note = notebook.find_note(name)
-    if note:
-        return f"{note}"
-    return f"Note {name.value} not found!"
-
-
-def unknown_command():
-    return 'Unknown command!'
-
-
-def help():
-    helper = PrettyTable()
-    helper.field_names = ["Command", "Description"]
-    comm = [["add", "new"], ["change", "replace"], ["change text", "text"], ["show all", "show"],
-            ["good bye", "exit", "bye", "stop"], ["add tag", "tag"], ["remove tag", "remove tag"],
-            ["del", "delete", "remove"], ["find", "search"]]
-    description = ["Add new note", "Change note name", "Change note text", "Show all notes", "Exit from notebook",
-                   "Add tag to note", "Remove tag from note", "Delete note", "Find note"]
-    for i, j in enumerate(comm):
-        helper.add_row([j, description[i]])
-    print(helper)
-
-
-commands = {
-    add_note: ["add", "new"],
-    change_note_name: ["change", "replace"],
-    change_note_text: ["change text", "text"],
-    show_notes: ["show all", "show"],
-    to_exit: ["good bye", "close", "exit", ".", "bye", "stop"],
-    add_tag: ["add tag", "tag"],
-    remove_tag: ["remove tag", "remove tag"],
-    del_note: ["del", "delete", "remove"],
-    find_note: ["find", "search"],
-    help: ["help"]
-}
-
-
-def input_parser(user_input):
-    for key, values in commands.items():
-        for i in values:
-            if user_input.lower().startswith(i.lower()):
-                return key, user_input[len(i):].strip().split()
-    return unknown_command, []
-
-
-def main():
-    notebook.load_file()
-    help()
-    while True:
-        user_input = input('Waiting your command:>>> ')
-        command, parser_data = input_parser(user_input)
-        print(command(*parser_data))
-        if command is to_exit:
-            notebook.save_file()
-            break
+    elif command == "tag":
+        name = input('Enter name: ').title().strip()
+        new_tag = input('Enter new tag: ').title().strip()
+        notebook.change_tag(name, new_tag)
+        notebook.save_data()
+        return True
+    elif command == "back":
+        notes_handler(command)
+        return True
 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        notebook.load_data()
+        print(f"{'=' * 15} Notes {'=' * 15}")
+        print(f'make - will create a new note\n'
+              f'show - will display a list of notes\n'
+              f'remove - will delete the required note\n'
+              f'find - will find the note you need3\n'
+              f'change - will change the note name, text or tag\n'
+              f'exit - will exit the program\n')
+        command = input("Enter command ==>: ").casefold().strip()
+        if command == "change":
+            print(f"{'=' * 6} What should be changed? {'=' * 6}")
+            print(f'name - change the name of the note\n'
+                  f'text - change the note text\n'
+                  f'tag - change tag for note\n'
+                  f'back - return to the main menu')
+            command = input("Enter command ==>: ").casefold().strip()
+            change_handler(command)
+        if command == "exit":
+            print("Goodbye!")
+            notebook.save_data()
+            break
+        if command not in all_commands:
+            print("Sorry, command not found! Please try again!")
+            continue
+        notes_handler(command)
