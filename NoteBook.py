@@ -126,7 +126,7 @@ all_commands = handler_commands + change_commands
 
 # ________________________Notes Handler________________________
 def notes_handler(command):
-    if command == "make" or command == 0:
+    if command == "make":
         try:
             print(f"{'=' * 10} Make note please: {'=' * 10}")
             name = input('Enter name: ').strip()
@@ -147,17 +147,17 @@ def notes_handler(command):
             print(f"Sorry, {e}. Please try again!")
             return True
 
-    elif command == "show" or command == 1:
+    elif command == "show":
         notebook.show_all_notes()
         return True
 
-    elif command == "remove" or command == 2:
+    elif command == "remove":
         name = input('Enter name: ').title().strip()
         notebook.remove_record(name)
         notebook.save_data()
         return True
 
-    elif command == "find" or command == 3:
+    elif command == "find":
         print("Find a note by tag, name or text")
         value = input('Enter value: ').strip()
         result_str = ''
@@ -172,7 +172,7 @@ def notes_handler(command):
         print(result_str if result_str else 'Not found!')
         return True
 
-    elif command == "change" or command == 4:
+    elif command == "change":
         return change_handler(command)
 
 
