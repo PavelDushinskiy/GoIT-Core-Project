@@ -1,9 +1,10 @@
 from typing import List
+from collections import UserDict
 
-from bot_feature import BotFeature
+from features.bot_feature import BotFeature
 
 
-class Notebook(BotFeature):
+class Notebook(BotFeature, UserDict):
     """
     An app feature that helps users to manage their notes.
     """

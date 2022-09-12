@@ -1,8 +1,8 @@
 from typing import List, Any
 
-from features import AddressBook
-from features import Files
-from features import Notebook
+from features.addressbook import AddressBook
+from features.files import Files
+from features.notebook import Notebook
 
 ADDRESS_BOOK_FILE = "address_book.bin"
 NOTEBOOK_FILE = "notebook.bin"
@@ -17,7 +17,7 @@ class AssistantBot:
         self.features = [
             Files(),
             Notebook(NOTEBOOK_FILE),
-            AddressBook(ADDRESS_BOOK_FILE),
+            AddressBook(ADDRESS_BOOK_FILE)
         ]
 
     def handle(self, handler_name: str, args: List[str]) -> str:

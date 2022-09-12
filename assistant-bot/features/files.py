@@ -1,5 +1,5 @@
-from ..sorter import sort_folder
-from bot_feature import BotFeature
+from features.sorter import sort_folder
+from features.bot_feature import BotFeature
 
 
 class Files(BotFeature):
