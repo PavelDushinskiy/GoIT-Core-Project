@@ -1,9 +1,10 @@
 from typing import List
+from collections import UserDict
 
-from bot_feature import BotFeature
+from features.bot_feature import BotFeature
 
 
-class AddressBook(BotFeature):
+class AddressBook(BotFeature, UserDict):
     """
     A feature that allows users to manage their contacts.
     """

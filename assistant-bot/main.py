@@ -27,6 +27,7 @@ class App:
             while True:
                 feature, args = self.parse_command(prompt("What do you want to do? ", completer=command_completer))
                 if feature in ["goodbye", "close", "exit"]:
+                    bot.backup_data()
                     print("Goodbye!")
                     break
                 else:
