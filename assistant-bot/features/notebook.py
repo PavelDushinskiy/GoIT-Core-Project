@@ -77,7 +77,7 @@ class Notebook(BotFeature):
             "search": self.search
             })
         self.save_file = save_file
-        self.data = {}
+        self.data = Notebook.load_data(save_file) or {}
 
     @staticmethod
     def name():
@@ -87,14 +87,15 @@ class Notebook(BotFeature):
         with open(self.save_file, 'wb') as f:
             pickle.dump(self.data, f)
 
-    # def load_data(self):
-    #     with open(self.save_file, 'rb') as f:
-    #         try:
-    #             loaded_data = pickle.load(f)
-    #             self.data = loaded_data
-    #         except Exception:
-    #             self.data = {}
-    #             return "Can't load data from file"
+    @classmethod
+    def load_data(cls, filepath):
+        with open(filepath, 'rb') as f:
+            try:
+                loaded_data = pickle.load(f)
+                return loaded_data
+            except Exception:
+                print("Can't load data from file")
+                return None
 
     def make(self):
         title = input('Enter the title: ').strip()
