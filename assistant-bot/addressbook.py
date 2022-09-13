@@ -5,12 +5,13 @@ from features.bot_feature import BotFeature
 import re
 import pickle
 
-
 NAME_REGEX = re.compile(r'^[\wа-яА-ЯєЄїЇ,. ]{2,30}$')
 PHONE_REGEX = re.compile(r'\+\d{3}\(\d{2}\)\d{3}-\d{1,2}-\d{2,3}')
 EMAIL_REGEX = re.compile(r'[a-zA-Z]\w+@[a-zA-Z]+\.[a-z]{2,}')
-BIRTHDAY_REGEX = re.compile(r'(?<!\d)(?:0?[1-9]|[12][0-9]|3[01])\.(?:0?[1-9]|1[0-2])\.(?:19[0-9][0-9]|20[01][0-9])(?!\d)')
+BIRTHDAY_REGEX = re.compile(
+    r'(?<!\d)(?:0?[1-9]|[12][0-9]|3[01])\.(?:0?[1-9]|1[0-2])\.(?:19[0-9][0-9]|20[01][0-9])(?!\d)')
 DATE_FORMAT = "%d.%m.%Y"
+
 
 def _now():
     return datetime.today()
@@ -89,10 +90,10 @@ class Address(Field):
 
 class Record:
     def __init__(self, name: str,
-                 phone: Phone,
-                 email: Email | None,
-                 birthday: Birthday | None,
-                 address: Address | None):
+                 phone: Phone = None,
+                 email: Email = None,
+                 birthday: Birthday = None,
+                 address: Address = None):
         self.name = Name(name)
         self.phones: list[Phone] = [phone] if phone is not None else []
         self.birthday = Birthday(birthday)
@@ -133,12 +134,6 @@ class Record:
                 return phone
         return None
 
-    def delete_email(self, email: Email):
-        try:
-            del self.email
-        except ValueError:
-            return f"{self.email} does not exist"
-
     def match_pattern(self, pattern):
         if re.search(pattern, self.name.value):
             return True
@@ -173,15 +168,17 @@ class AddressBook(BotFeature, UserDict):
             "search": self.search
         })
 
+        self.file_path = file_path
+
         # TODO: Implement deserialization
 
     def __enter__(self):
-            self.__restore()
-            # print(f"Restoring the address book from {file_path}")
-            return self
+        self.__restore()
+        # print(f"Restoring the address book from {file_path}")
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-            self.__save()
+        self.__save()
 
     def __save(self):
         try:
@@ -211,7 +208,7 @@ class AddressBook(BotFeature, UserDict):
         field, name = args[0], args[1]
         if len(*args) == 2:
             if name not in self.data.keys():
-                self.add_record(Record(name))
+                self.add_record(Record(name[0]))
                 return f"New contact added"
             else:
                 raise ValueError("This name is already in your addressbook.")
@@ -222,7 +219,7 @@ class AddressBook(BotFeature, UserDict):
                     if not re.match(PHONE_REGEX, phone[0]):
                         raise ValueError('Number must be in international format, for example +380(67)012-34-56')
                     else:
-                        record = Record(name)
+                        record = Record(name[0])
                         record.add_phone(Phone(phone))
                         return f"Phone for {name} added"
                 case "email":
@@ -230,7 +227,7 @@ class AddressBook(BotFeature, UserDict):
                     if not re.match(EMAIL_REGEX, email[0]):
                         raise ValueError('It does not look like an email address')
                     else:
-                        record = Record(name)
+                        record = Record(name[0])
                         record.add_email(Email(email))
                         return f"Email for {name} added"
                 case "birthday":
@@ -240,12 +237,12 @@ class AddressBook(BotFeature, UserDict):
                     elif datetime.strptime(birthday[0], DATE_FORMAT).date() > _now():
                         raise ValueError('Birthday can not be in the future')
                     else:
-                        record = Record(name)
+                        record = Record(name[0])
                         record.add_birthday(Birthday(birthday))
                         return f"Birthday for {name} added"
                 case "address":
                     name, address = args[1], args[2]
-                    record = Record(name)
+                    record = Record(name[0])
                     record.add_address(Address(address))
                     return f"Address for {name} added"
 
@@ -257,18 +254,18 @@ class AddressBook(BotFeature, UserDict):
                     raise ValueError('Number must be in international format, for example +380(67)012-34-56')
                 else:
                     new_phone = args[3]
-                    record = Record(name)
+                    record = Record(name[0])
                     record.change_phone(Phone(value), Phone(new_phone))
                     return f"Phone for {name} changed"
             case "email":
                 if not re.match(EMAIL_REGEX, value[0]):
                     raise ValueError('It does not look like an email address')
                 else:
-                    record = Record(name)
+                    record = Record(name[0])
                     record.change_email(Email(value))
                     return f"Email for {name} changed"
             case "address":
-                record = Record(name)
+                record = Record(name[0])
                 record.change_address(Address(value))
                 return f"Address for {name} changed"
 
@@ -303,7 +300,3 @@ class AddressBook(BotFeature, UserDict):
             return "\n".join([str(r) for r in result])
         else:
             return "Unfortunately, I couldn't find any text that matched your query."
-
-
-
-
