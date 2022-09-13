@@ -1,4 +1,4 @@
-from typing import List, Tuple, Any
+from typing import List, Any
 from collections import UserDict
 from datetime import datetime, timedelta
 from features.bot_feature import BotFeature
@@ -204,14 +204,14 @@ class AddressBook(BotFeature, UserDict):
     def name(self):
         return "contacts"
 
-    # TODO: Implement the methods
+    def add_record(self, record: Record):
+        self.data[record.name.value] = record
 
     def add(self, *args: List[str]) -> str:
         field, name = args[0], args[1]
         if len(*args) == 2:
-            if name not in self.data:
-                record = Record(name)
-                record.name = field
+            if name not in self.data.keys():
+                self.add_record(Record(name))
                 return f"New contact added"
             else:
                 raise ValueError("This name is already in your addressbook.")
@@ -257,7 +257,7 @@ class AddressBook(BotFeature, UserDict):
                     raise ValueError('Number must be in international format, for example +380(67)012-34-56')
                 else:
                     new_phone = args[3]
-                    record = Record(field)
+                    record = Record(name)
                     record.change_phone(Phone(value), Phone(new_phone))
                     return f"Phone for {name} changed"
             case "email":
@@ -274,7 +274,7 @@ class AddressBook(BotFeature, UserDict):
 
     def remove(self, *args: List[str]) -> str:
         name = args[0]
-        if name is not self.data:
+        if name is not self.data.keys():
             raise ValueError("There is no such contact. Try again...")
         else:
             self.data.pop(name)
