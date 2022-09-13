@@ -1,7 +1,6 @@
 from typing import Any, List
 from datetime import date
 import re
-import pickle
 
 from features.bot_feature import BotFeature
 
@@ -70,37 +69,23 @@ class Notebook(BotFeature):
         An app feature that helps users to manage their notes.
         """
         super().__init__({
-            "make": self.make,
-            "change": self.change,
-            "remove": self.remove_note,
-            "show": self.show_all_notes,
-            "search": self.search
+            "make": self.make_note,
+            "change": self.change_note,
+            "remove": self.remove_record,
+            "show": self.show_all,
+            "search": self.search_record
             })
         self.save_file = save_file
-        self.data = Notebook.load_data(save_file) or {}
+        self.data = BotFeature.load_data(save_file) or {}
 
     @staticmethod
     def name():
         return "notes"
 
-    def backup_data(self):
-        with open(self.save_file, 'wb') as f:
-            pickle.dump(self.data, f)
-
-    @classmethod
-    def load_data(cls, filepath):
-        with open(filepath, 'rb') as f:
-            try:
-                loaded_data = pickle.load(f)
-                return loaded_data
-            except Exception:
-                print("Can't load data from file")
-                return None
-
-    def make(self):
+    def make_note(self):
         title = input('Enter the title: ').strip()
 
-        if self.note_exists(title):
+        if self.record_exists(title):
             return f"Note {title} already exists! Try another name."
 
         text = input('Enter the text: ')
@@ -109,12 +94,9 @@ class Notebook(BotFeature):
         self.add_record(note)
         return f"Note {title} was created successfully!"
 
-    def add_record(self, record: NoteRecord) -> None:
-        self.data[record.title] = record
-
-    def change(self, *args: str):
+    def change_note(self, *args: str):
         title = " ".join(args)
-        if self.note_exists(title):
+        if self.record_exists(title):
             note_to_change = self.data[title]
             while True:
                 to_change = input("What do you want to change? Type title, tags or text: ")
@@ -144,28 +126,5 @@ class Notebook(BotFeature):
         else:
             raise KeyError("Note with this title doesn't exist.")
 
-    def remove_note(self, title):
-        if self.note_exists(title):
-            del self.data[title]
-            return f"Note {title} was deleted successfully!"
-        else:
-            return f"Note {title} was not found! Please try again."
-
     def show_note(self, title) -> str:
         return str(self.data[title])
-
-    def show_all_notes(self) -> str:
-        result = ""
-        for note in self.data.values():
-            result += str(note) + "\n"
-        return result
-
-    def search(self, needle: str):
-        result = list(filter(lambda note: needle in str(note), self.data.values()))
-        if result:
-            return "\n".join([str(r) for r in result])
-        else:
-            return "Sorry, couldn't find any notes that match the query."
-
-    def note_exists(self, title) -> bool:
-        return title in self.data

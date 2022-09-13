@@ -18,7 +18,7 @@ class AssistantBot:
         self.features = [
             Files(),
             Notebook(NOTEBOOK_FILE),
-            #AddressBook(ADDRESS_BOOK_FILE)
+            AddressBook(ADDRESS_BOOK_FILE)
         ]
 
     @staticmethod
@@ -69,14 +69,8 @@ class AssistantBot:
     def help():
         return """
         To work with contacts type:
-        - contacts add name
-        - contacts add phone name phone (in format +123456789011 or 1234567890)
-        - contacts add email name email
-        - contacts add birthday name birthdate (in format dd.mm.yyyy)
-        - contacts add address name address
-        - contacts change phone name old_phone new_phone
-        - contacts change email name new_email
-        - contacts change address name new_address
+        - contacts add
+        - contacts change name
         - contacts remove name
         - contacts show
         - contacts search name/phone
@@ -105,4 +99,4 @@ class AssistantBot:
     def backup_data(self):
         for handler in self.features:
             if isinstance(handler, BotFeature):
-                handler.backup_data()
+                BotFeature.backup_data(handler)
