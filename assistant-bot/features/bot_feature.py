@@ -10,11 +10,14 @@ class BotFeature:
         self.command_handlers = command_handlers
 
     def name(self):
-        raise NotImplementedError("This method is not implemented yet")
+        pass
 
     def handle_command(self, command: str, *args: List[str]):
         handler = self.command_handlers.get(command, None)
         if handler:
-            handler(*args)
+            return handler(*args)
         else:
             raise ValueError("Unexpected command")
+
+    def backup_data(self):
+        pass

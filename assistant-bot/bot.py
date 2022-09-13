@@ -1,11 +1,12 @@
-from typing import List, Any
+from typing import List, Any, Callable
 
 from features.addressbook import AddressBook
 from features.files import Files
 from features.notebook import Notebook
+from features.bot_feature import BotFeature
 
-ADDRESS_BOOK_FILE = "address_book.bin"
-NOTEBOOK_FILE = "notebook.bin"
+ADDRESS_BOOK_FILE = "assistant-bot/address_book.bin"
+NOTEBOOK_FILE = "assistant-bot/notebook.bin"
 
 
 class AssistantBot:
@@ -17,9 +18,30 @@ class AssistantBot:
         self.features = [
             Files(),
             Notebook(NOTEBOOK_FILE),
-            AddressBook(ADDRESS_BOOK_FILE)
+            #AddressBook(ADDRESS_BOOK_FILE)
         ]
 
+    @staticmethod
+    def input_error(func: Callable) -> Callable[[tuple[Any, ...]], str | Any]:
+        """
+        A decorator that catches the domain-level exceptions and returns human-readable error message.
+        """
+
+        def exception_handler(*args, **kwargs):
+            try:
+                result = func(*args, **kwargs)
+            except TypeError as err:
+                return f"Invalid input, some info is missing: {err}"
+            except KeyError as err:
+                return f"Sorry: {err}"
+            except ValueError as err:
+                return f"ValueError: {err}"
+            else:
+                return result
+
+        return exception_handler
+
+    @input_error
     def handle(self, handler_name: str, args: List[str]) -> str:
         """
         Calls the commands of the features and returns results.
@@ -60,9 +82,10 @@ class AssistantBot:
         - contacts search name/phone
 
         To work with notes type:
+        - notes make 
         - notes change title
         - notes remove title
-        - notes show all
+        - notes show 
         - notes search tag/title/text
 
         To check a list of people who have birthdays in the given interval type:
@@ -73,8 +96,13 @@ class AssistantBot:
         """
 
     def autocomplete(self):
-        result = ["help"]
+        result = []
         for feature in self.features:
             for command_name in feature.command_handlers.keys():
                 result.append(f"{feature.name()} {command_name}")
         return result
+
+    def backup_data(self):
+        for handler in self.features:
+            if isinstance(handler, BotFeature):
+                handler.backup_data()
