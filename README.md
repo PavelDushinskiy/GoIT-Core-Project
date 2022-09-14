@@ -6,7 +6,10 @@
 
 ## Our assistant will help you to solve your everyday tasks
 **Install Personal Assistant from terminal:**
+
+```shell
 pip install -i https://test.pypi.org/simple/ helper-bot-team-1
+```
 
 **To start the bot use command 'helper-bot' in terminal**
 
