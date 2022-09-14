@@ -10,5 +10,5 @@ setup(name="helper-bot-team-1",
           "Programming Language :: Python :: 3",
           "Operating System :: Windows",
       ],
-      entry_points={"console_scripts": ["helper-bot=helper-bot-team-1.main:run_app"]}
+      entry_points={'console_scripts': ['helper_bot=helper_bot_team_1.main:run_app']}
       )
