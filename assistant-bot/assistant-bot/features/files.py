@@ -18,9 +18,16 @@ class Files(BotFeature):
 
     @staticmethod
     def sort(*args: str) -> str:
+        """
+        Sorts the folder. Catches system errors when the operating system tries to reach the path.
+
+        :param args:
+        :return:
+        """
+        
         path = " ".join(args)
         if os.path.exists(path):
             sort_folder(path)
             return "Folder is sorted"
         else:
-            return "Path is not exist. Try again..."
+            return "Path does not exist. Try again."

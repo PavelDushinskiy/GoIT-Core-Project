@@ -49,26 +49,41 @@ class NoteRecord:
     def __str__(self) -> str:
         return f'{self.name.value}\n{self.text}\n{", ".join([p for p in self.tags])}\n{self.created}'
 
-    def change_title(self, new_title: str):
+    def change_title(self, new_title: str) -> None:
+        """
+        Changes the title of the note.
+
+        :param new_title: a new title
+        """
+
         self.name = Title(new_title)
 
-    def change_tags(self, *args: str):
+    def change_tags(self, *args: str) -> None:
+        """
+        Changes the tags of the note.
+
+        :param args: new tags
+        """
+
         self.tags.clear()
         self.tags = list(args)
 
-    def change_text(self, new_text: str):
-        self.text = new_text
+    def change_text(self, new_text: str) -> None:
+        """
+        Changes the text of the note.
 
-    def remove_tag(self, tag: str):
-        self.tags.remove(tag)
+        :param new_text: a new text
+        """
+
+        self.text = new_text
 
 
 class Notebook(BotFeature):
+    """
+    An app feature that helps users to manage their notes.
+    """
 
     def __init__(self, save_file: str):
-        """
-        An app feature that helps users to manage their notes.
-        """
         self.save_file = save_file
         self.data = RecordsContainer(save_file)
 
@@ -84,11 +99,17 @@ class Notebook(BotFeature):
     def name():
         return "notes"
 
-    def make_note(self):
+    def make_note(self) -> str:
+        """
+        Creates a new note. Raises exception if note with a given title already exists.
+
+        :return: success message
+        """
+
         title = input('Enter the title: ').strip()
 
         if self.data.record_exists(title):
-            return f"Note {title} already exists! Try another name."
+            raise f"Note {title} already exists! Try another name."
 
         text = input('Enter the text: ')
         tags = input('Enter the tags: ').strip().split()
@@ -96,7 +117,14 @@ class Notebook(BotFeature):
         self.data.add_record(note)
         return f"Note {title} was created successfully!"
 
-    def change_note(self, *args: str):
+    def change_note(self, *args: str) -> str:
+        """
+        Changes existing notes. Raises exception if a note that the user wants to change does not exist.
+
+        :param args: note title
+        :return: success message
+        """
+
         title = " ".join(args)
         if self.data.record_exists(title):
             note_to_change = self.data[title]
@@ -127,6 +155,3 @@ class Notebook(BotFeature):
                     return "The note was changed successfully!"
         else:
             raise KeyError("Note with this title doesn't exist.")
-
-    def show_note(self, title) -> str:
-        return str(self.data[title])

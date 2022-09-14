@@ -1,5 +1,4 @@
 from typing import List, Callable
-import pickle
 
 
 class BotFeature:
