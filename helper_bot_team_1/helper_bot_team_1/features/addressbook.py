@@ -24,13 +24,7 @@ class AddressBook(BotFeature):
     def name(self):
         return "contacts"
 
-    def add_contact(self) -> str:
-        """
-        Adds a contact to the addressbook. Throws exception if contact with the given name already exists.
-
-        :return: success message or ValueError
-        """
-
+    def add_contact(self):
         name = input("Enter the name: ").strip()
         if self.data.record_exists(name):
             raise ValueError("This name is already in your phonebook. If you want to change something type 'change'.")

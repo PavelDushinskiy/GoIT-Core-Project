@@ -4,17 +4,22 @@
 * [Eugene Vyshnytsky](https://github.com/Vishnyak13)
 * [Pavlo Dushinsky](https://github.com/PavelDushinskiy)
 
-### This Virtual Assistant with a CLI interface can:
-* saves contacts with names, phone numbers, email, addresses and birthdays to the contact book;
-* displays a list of contacts whose birthday is a specified number of days from the current date;
-* checks the correctness of the entered phone number and email when creating or editing a record and notifies the user in case of incorrect entry;
-* searches for contacts from the contact book;
-* edits and deletes entries from the contact book;
-* saves notes with text information;
-* searches for notes;
-* edit and delete notes;
-* adds "tags" to notes, keywords describing the subject and subject of the record;
-* searches and sorts notes by keywords (tags);
-* sorts files in the specified folder by categories (images, documents, videos, etc.).
-* analyzes the entered text and try to guess what the user wants from it and offer the nearest command for execution
+## Our assistant will help you to solve your everyday tasks
+**Install Personal Assistant from terminal: Use command:**
+
+**To start the bot use command 'helper-bot' in terminal**
+
+***What our assistant can do:***
+1. *Save contacts with names, addresses, phone numbers, email and birthdays to the contacts book.*
+2. *Display a list of contacts whose birthday is in a specified number of days from the current date.*
+3. *Check the correctness of the entered phone number and email when creating or editing a record and notify the user in case of an incorrect entry.*
+4. *Search contacts from the contacts book.*
+5. *Edit and delete entries from the contacts book.*
+6. *Save notes with name, tags and text.*
+7. *Search notes by tag.*
+8. *Search notes by name or text.*
+9. *Edit and delete notes.*
+10. *Add tags to notes (i.e. keywords that describe the topic and subject of the note).*
+11. *Sort files in a given folder by categories (images, videos, documents, audio, archives, other).*
+12. *Analyze the entered text and suggest the command for execution.*
 
