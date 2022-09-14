@@ -54,7 +54,6 @@ class RecordsContainer(UserDict):
         """
         Removes a given record. Throws exception if the record does not exist.
 
-        :param record_name: a record to remove
         :return: success message
         """
 
