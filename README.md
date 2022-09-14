@@ -4,17 +4,22 @@
 * [Eugene Vyshnytsky](https://github.com/Vishnyak13)
 * [Pavlo Dushinsky](https://github.com/PavelDushinskiy)
 
-### This Virtual Assistant with a CLI interface can:
-* saves contacts with names, phone numbers, email, addresses and birthdays to the contact book;
-* displays a list of contacts whose birthday is a specified number of days from the current date;
-* checks the correctness of the entered phone number and email when creating or editing a record and notifies the user in case of incorrect entry;
-* searches for contacts from the contact book;
-* edits and deletes entries from the contact book;
-* saves notes with text information;
-* searches for notes;
-* edit and delete notes;
-* adds "tags" to notes, keywords describing the subject and subject of the record;
-* searches and sorts notes by keywords (tags);
-* sorts files in the specified folder by categories (images, documents, videos, etc.).
-* analyzes the entered text and try to guess what the user wants from it and offer the nearest command for execution
+## Our assistant will help you solve your everyday tasks
+**Install Personal Assistant from terminal: Use command:**
+
+**For start bot use command 'helper-bot' in terminal**
+
+***What our assistant can do:***
+1. *Save contacts with names, addresses, phone numbers, email and birthdays to the contact book.*
+2. *Displays a list of contacts whose birthday is a specified number of days from the current date.*
+3. *Checks the correctness of the entered phone number and email when creating or editing a record and notify the user in case of incorrect entry.*
+4. *Searches for contacts from the contacts book.*
+5. *Edit and delete entries from the contact book*
+6. *Save new note with name, tag and text*
+7. *Search for note by tag*
+8. *Search for note by name or text*
+9. *Edit and delete notes*
+10. *Add tags to note, keywords that describe the topic and subject of the record*
+11. *Sorting files in current folder by categories(images, videos, documents, music, archives, other)*
+12. *Analyzes the entered text and tries to guess what the user wants from it and suggests the nearest command for execution.*
 
