@@ -1,4 +1,5 @@
 from typing import List, Callable
+import pickle
 
 
 class BotFeature:
@@ -18,6 +19,3 @@ class BotFeature:
             return handler(*args)
         else:
             raise ValueError("Unexpected command")
-
-    def backup_data(self):
-        pass
