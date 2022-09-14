@@ -17,6 +17,6 @@ class Files(BotFeature):
 
     @staticmethod
     def sort(*args: str) -> str:
-        path = args[0]
+        path = " ".join(args)
         sort_folder(path)
         return "Folder is sorted"

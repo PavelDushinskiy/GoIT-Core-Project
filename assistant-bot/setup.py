@@ -7,5 +7,5 @@ setup(name="cli_assistant_bot",
       url="https://github.com/PavelDushinskiy/GoIT-Core-Project",
       author="Yanina Lubenska, Eugene Vyshnytsky, Pavel Dushinskiy",
       packages=["assistant-bot"],
-      entry_points={"console_scripts": ["assistant-bot = assistant-bot.main:run_app"]}
+      entry_points={"console_scripts": ["assistant-bot = helper-bot.main:run_app"]}
       )

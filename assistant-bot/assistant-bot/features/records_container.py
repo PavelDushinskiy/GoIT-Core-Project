@@ -1,9 +1,11 @@
 import pickle
+from collections import UserDict
 
 
-class RecordsContainer:
+class RecordsContainer(UserDict):
 
     def __init__(self, save_file):
+        super().__init__()
         self.data = RecordsContainer.load_data(save_file) or {}
 
     @classmethod
@@ -38,7 +40,7 @@ class RecordsContainer:
         if self.data:
             result = ""
             for record in self.data.values():
-                result += str(record) + "\n"
+                result += "\n" + str(record) + "\n"
             return result
         else:
             return "You don't have any data yet."
@@ -46,6 +48,6 @@ class RecordsContainer:
     def search_record(self, needle: str) -> str:
         result = list(filter(lambda record: needle in str(record), self.data.values()))
         if result:
-            return "\n".join([str(r) for r in result])
+            return "\n".join(["\n" + str(r) for r in result])
         else:
             return "Sorry, couldn't find any records that match the query."

@@ -94,7 +94,7 @@ def is_empty_dir(directory):
     return len(os.listdir(directory)) == 0
 
 
-def sort_folder(path: str) -> None:
+def sort_folder(path) -> None:
     """
     Iterates recursively over folders in the given path and organizes the files found in the folders according to their
     extensions.
@@ -117,7 +117,7 @@ def sort_folder(path: str) -> None:
             new_path = os.path.join(path, normalized_name(f))
             if not os.path.exists(new_path):
                 os.rename(f, new_path)
-            extension = Path(new_path).suffix
+            extension = Path(new_path).suffix.lower()
 
             if extension in IMAGES:
                 organize(new_path, path, IMAGE_DIR)

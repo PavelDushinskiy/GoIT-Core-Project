@@ -2,8 +2,6 @@ from features.bot_feature import BotFeature
 from features.addressbook_fields import Record
 from features.records_container import RecordsContainer
 
-DATE_FORMAT = "%d.%m.%Y"
-
 
 class AddressBook(BotFeature):
     """
@@ -29,8 +27,7 @@ class AddressBook(BotFeature):
     def add_contact(self):
         name = input("Enter the name: ").strip()
         if self.data.record_exists(name):
-            return ValueError("This name is already in your phonebook. If you want to change the phone number, "
-                              "type 'change'.")
+            return ValueError("This name is already in your phonebook. If you want to change something type 'change'.")
         record = Record(name)
         self.data.add_record(record)
 
@@ -58,23 +55,23 @@ class AddressBook(BotFeature):
         if self.data.record_exists(name):
             contact_to_change = self.data[name]
             while True:
-                to_change = input("What do you want to change? Type phone, email or address: ")
-                if to_change.lower() not in ["phone", "email", "address"]:
+                to_change = input("What do you want to change? Type phone, email, birthday or address: ")
+                if to_change.lower() not in ["phone", "email", "address", "birthday"]:
                     print("Unknown command")
                     continue
                 elif to_change.lower() == "phone":
-                    old_phone = input("Enter a phone to change:")
                     new_phone = input("Enter a new phone: ")
-                    contact_to_change.delete_phone(old_phone)
+                    contact_to_change.phones.clear()
                     contact_to_change.add_phone(new_phone)
-                    self.data.remove_record(name)
-                    self.data.add_record(contact_to_change)
                 elif to_change.lower() == "email":
                     new_email = input("Enter a new email: ")
                     contact_to_change.add_email(new_email)
                 elif to_change.lower() == "address":
                     new_address = input("Enter new address here: ")
                     contact_to_change.add_address(new_address)
+                elif to_change.lower() == "birthday":
+                    new_birthday = input("Enter a birthdate: ")
+                    contact_to_change.add_birthday(new_birthday)
 
                 to_continue = input("Do you want to change something else in this contact? Enter y or n: ")
                 if to_continue.lower() not in ["y", "n"]:
