@@ -98,5 +98,5 @@ class AssistantBot:
 
     def backup_data(self):
         for handler in self.features:
-            if handler.data:
+            if hasattr(handler, "data"):
                 handler.data.backup_data(handler)

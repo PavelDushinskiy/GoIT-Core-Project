@@ -41,16 +41,16 @@ class Title(Field):
 class NoteRecord:
 
     def __init__(self, title: str, text: str, tags: List[str]) -> None:
-        self.title = Title(title)
+        self.name = Title(title)
         self.text = text
         self.created = date.today()
         self.tags = tags
 
     def __str__(self) -> str:
-        return f'{self.title.value}\n{self.text}\n{", ".join([p for p in self.tags])}\n{self.created}'
+        return f'{self.name.value}\n{self.text}\n{", ".join([p for p in self.tags])}\n{self.created}'
 
     def change_title(self, new_title: str):
-        self.title = Title(new_title)
+        self.name = Title(new_title)
 
     def change_tags(self, *args: str):
         self.tags.clear()
@@ -108,8 +108,8 @@ class Notebook(BotFeature):
                 elif to_change.lower() == "title":
                     new_title = input("Enter a new title: ")
                     note_to_change.change_title(new_title)
-                    self.data.remove_record(title)
                     self.data.add_record(note_to_change)
+                    self.data.remove_record(title)
                 elif to_change.lower() == "tags":
                     new_tags = input("Enter new tags: ")
                     note_to_change.change_tags(new_tags)

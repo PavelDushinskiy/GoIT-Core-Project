@@ -1,6 +1,8 @@
 from re import match
 import datetime
 
+DATE_FORMAT = "%d.%m.%Y"
+
 
 class Field:
     """
@@ -173,8 +175,12 @@ class Record:
         Adds a birthdate to the record.
         :param birthday: datetime object
         """
+        try:
+            birthday_date = datetime.datetime.strptime(birthday, DATE_FORMAT).date()
+        except ValueError:
+            raise ValueError(f"{birthday} does not march format '%d.%m.%Y'")
 
-        self.birthday = Birthday(birthday)
+        self.birthday = Birthday(birthday_date)
 
     def add_email(self, email: str):
         if Email.is_valid(email):
@@ -187,8 +193,6 @@ class Record:
         self.address = " ".join(args)
 
     def __str__(self):
-        phones = ", ".join(map(lambda phone: str(phone), self.phones))
-        if self.birthday:
-            return f"Name: {self.name}, phones: {phones}, birthday: {self.birthday}"
-        else:
-            return f"Name: {self.name}, phones: {phones}"
+        phones = ", ".join(map(lambda phone: str(phone), self.phones)) if self.phones else "no saved phones"
+        return f"Name: {self.name}, phones: {phones}, birthday: {self.birthday}, email: {self.email}, " \
+               f"address: {self.address}"
