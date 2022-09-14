@@ -1,11 +1,11 @@
 from typing import List, Any, Callable
 
-from features.addressbook import AddressBook
-from features.files import Files
-from features.notebook import Notebook
+from helper_bot_team_1.features.addressbook import AddressBook
+from helper_bot_team_1.features.files import Files
+from helper_bot_team_1.features.notebook import Notebook
 
-ADDRESS_BOOK_FILE = "assistant-bot/assistant-bot/address_book.bin"
-NOTEBOOK_FILE = "assistant-bot/assistant-bot/notebook.bin"
+ADDRESS_BOOK_FILE = "address_book.bin"
+NOTEBOOK_FILE = "notebook.bin"
 
 
 class AssistantBot:

@@ -1,6 +1,6 @@
-from features.bot_feature import BotFeature
-from features.addressbook_fields import Record, Name
-from features.records_container import RecordsContainer
+from helper_bot_team_1.features.addressbook_fields import Record
+from helper_bot_team_1.features.bot_feature import BotFeature
+from helper_bot_team_1.features.records_container import RecordsContainer
 
 
 class AddressBook(BotFeature):
@@ -24,13 +24,7 @@ class AddressBook(BotFeature):
     def name(self):
         return "contacts"
 
-    def add_contact(self) -> str:
-        """
-        Adds a contact to the addressbook. Throws exception if contact with the given name already exists.
-
-        :return: success message or ValueError
-        """
-
+    def add_contact(self):
         name = input("Enter the name: ").strip()
         if self.data.record_exists(name):
             raise ValueError("This name is already in your phonebook. If you want to change something type 'change'.")
