@@ -6,5 +6,9 @@ setup(name="helper-bot-team-1",
       url="https://github.com/PavelDushinskiy/GoIT-Core-Project",
       author="Yanina Lubenska, Eugene Vyshnytsky, Pavel Dushinskiy",
       packages=find_namespace_packages(),
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "Operating System :: Windows",
+      ],
       entry_points={"console_scripts": ["helper-bot=helper-bot-team-1.main:run_app"]}
       )
