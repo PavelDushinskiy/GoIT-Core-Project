@@ -1,5 +1,5 @@
-from features.sorter import sort_folder
-from features.bot_feature import BotFeature
+from helper_bot_team_1.features.sorter import sort_folder
+from helper_bot_team_1.features.bot_feature import BotFeature
 import os.path
 
 

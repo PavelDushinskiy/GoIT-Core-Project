@@ -1,3 +1,4 @@
+import os.path
 import pickle
 from collections import UserDict
 
@@ -12,12 +13,14 @@ class RecordsContainer(UserDict):
         self.data = RecordsContainer.load_data(save_file) or {}
 
     @classmethod
-    def load_data(cls, filepath: str) -> None | str:
+    def load_data(cls, filepath: str) -> None | dict:
         """
         Loads records from a file.
 
         :param filepath: a backup file
         """
+        if not os.path.exists(filepath):
+            return None
 
         with open(filepath, 'rb') as f:
             try:
@@ -25,6 +28,7 @@ class RecordsContainer(UserDict):
                 return loaded_data
             except EOFError:
                 pass
+        return None
 
     @staticmethod
     def backup_data(handler) -> None:

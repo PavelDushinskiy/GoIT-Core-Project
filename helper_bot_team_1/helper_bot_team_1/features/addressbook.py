@@ -1,6 +1,6 @@
-from features.bot_feature import BotFeature
-from features.addressbook_fields import Record, Name
-from features.records_container import RecordsContainer
+from helper_bot_team_1.features.addressbook_fields import Record
+from helper_bot_team_1.features.bot_feature import BotFeature
+from helper_bot_team_1.features.records_container import RecordsContainer
 
 
 class AddressBook(BotFeature):
