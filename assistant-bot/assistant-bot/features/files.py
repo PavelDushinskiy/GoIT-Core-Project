@@ -1,5 +1,6 @@
 from features.sorter import sort_folder
 from features.bot_feature import BotFeature
+import os.path
 
 
 class Files(BotFeature):
@@ -23,10 +24,10 @@ class Files(BotFeature):
         :param args:
         :return:
         """
-
-        try:
-            path = " ".join(args)
+        
+        path = " ".join(args)
+        if os.path.exists(path):
             sort_folder(path)
             return "Folder is sorted"
-        except WindowsError as e:
-            raise WindowsError(f"{e}")
+        else:
+            return "Path does not exist. Try again."
