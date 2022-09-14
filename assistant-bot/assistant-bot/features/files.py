@@ -1,5 +1,6 @@
 from features.sorter import sort_folder
 from features.bot_feature import BotFeature
+import os.path
 
 
 class Files(BotFeature):
@@ -18,5 +19,8 @@ class Files(BotFeature):
     @staticmethod
     def sort(*args: str) -> str:
         path = " ".join(args)
-        sort_folder(path)
-        return "Folder is sorted"
+        if os.path.exists(path):
+            sort_folder(path)
+            return "Folder is sorted"
+        else:
+            return "Path is not exist. Try again..."
