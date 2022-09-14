@@ -1,5 +1,5 @@
 from features.bot_feature import BotFeature
-from features.addressbook_fields import Record
+from features.addressbook_fields import Record, Name
 from features.records_container import RecordsContainer
 
 
@@ -24,10 +24,17 @@ class AddressBook(BotFeature):
     def name(self):
         return "contacts"
 
-    def add_contact(self):
+    def add_contact(self) -> str:
+        """
+        Adds a contact to the addressbook. Throws exception if contact with the given name already exists.
+
+        :return: success message or ValueError
+        """
+
         name = input("Enter the name: ").strip()
         if self.data.record_exists(name):
-            return ValueError("This name is already in your phonebook. If you want to change something type 'change'.")
+            raise ValueError("This name is already in your phonebook. If you want to change something type 'change'.")
+
         record = Record(name)
         self.data.add_record(record)
 
@@ -50,7 +57,14 @@ class AddressBook(BotFeature):
 
         return f"Contact {name} was created successfully!"
 
-    def change_contact(self, *args: str):
+    def change_contact(self, *args: str) -> str:
+        """
+        Changes the contact data. Throws exception if the contact with the given name doesn't exist.
+
+        :param args: name of a contact to change
+        :return: success message or KeyError
+        """
+
         name = " ".join(args)
         if self.data.record_exists(name):
             contact_to_change = self.data[name]
@@ -82,10 +96,15 @@ class AddressBook(BotFeature):
                 else:
                     return "The contact was changed successfully!"
         else:
-            raise KeyError("Note with this title doesn't exist.")
+            raise KeyError("Contact with this name doesn't exist.")
 
     def check_birthdays(self, period: str) -> str:
+        """
+        Creates and returns a list of people who have birthdays in a given period.
 
+        :param period: number of days starting from today
+        :return: a list of contacts as a string
+        """
         if not period.isdigit():
             raise ValueError("Enter a number of days.")
 

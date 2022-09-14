@@ -17,6 +17,16 @@ class Files(BotFeature):
 
     @staticmethod
     def sort(*args: str) -> str:
-        path = " ".join(args)
-        sort_folder(path)
-        return "Folder is sorted"
+        """
+        Sorts the folder. Catches system errors when the operating system tries to reach the path.
+
+        :param args:
+        :return:
+        """
+
+        try:
+            path = " ".join(args)
+            sort_folder(path)
+            return "Folder is sorted"
+        except WindowsError as e:
+            raise WindowsError(f"{e}")

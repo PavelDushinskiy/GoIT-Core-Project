@@ -3,7 +3,6 @@ from typing import List, Any, Callable
 from features.addressbook import AddressBook
 from features.files import Files
 from features.notebook import Notebook
-from features.bot_feature import BotFeature
 
 ADDRESS_BOOK_FILE = "assistant-bot/assistant-bot/address_book.bin"
 NOTEBOOK_FILE = "assistant-bot/assistant-bot/notebook.bin"
@@ -66,7 +65,12 @@ class AssistantBot:
         return handler
 
     @staticmethod
-    def help():
+    def help() -> str:
+        """
+        Returns a help message.
+
+        :return: help message
+        """
         return """
         To work with contacts type:
         - contacts add
@@ -89,7 +93,12 @@ class AssistantBot:
         - files sort path
         """
 
-    def autocomplete(self):
+    def autocomplete(self) -> List:
+        """
+        Creates a list of autocomplete commands.
+
+        :return: list of possible commands
+        """
         result = []
         for feature in self.features:
             for command_name in feature.command_handlers.keys():
@@ -97,6 +106,9 @@ class AssistantBot:
         return result
 
     def backup_data(self):
+        """
+        Saves user data to files.
+        """
         for handler in self.features:
             if hasattr(handler, "data"):
                 handler.data.backup_data(handler)

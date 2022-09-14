@@ -1,5 +1,6 @@
 from re import match
 import datetime
+from typing import Match
 
 DATE_FORMAT = "%d.%m.%Y"
 
@@ -44,16 +45,14 @@ class Name(Field):
     A name of a person in an addressbook.
     """
 
-    @classmethod
-    def is_valid(cls, value: str):
-        return match(r"\b[A-Za-z-]+", value)
-
-    def verify_value(self, value: str):
+    def verify_value(self, value: str) -> None:
         """
-        Verifies that name consists only of alphabetical characters. Raises exception if the name contains something
-        besides latin letters.
+        Verifies that name is not smaller than 2 characters long and not bigger than 30 characters. Raises exception if
+        the name is too short or too long.
+
         :param value: a name to check
         """
+
         if len(value) < 2 or len(value) > 30:
             raise ValueError("Name must be between 2 and 30 characters.")
 
@@ -64,12 +63,13 @@ class Phone(Field):
     """
 
     @classmethod
-    def is_valid(cls, value: str):
+    def is_valid(cls, value: str) -> None | Match[str]:
         return match(r"(\+?\d{12}|\d{10})", value)
 
-    def verify_value(self, value: str):
+    def verify_value(self, value: str) -> None:
         """
         Checks if the phone is given in a valid format. Raises exception if the phone doesn't match one of the formats.
+
         :param value: phone number
         """
 
@@ -82,10 +82,11 @@ class Birthday(Field):
     Person's birthday date.
     """
 
-    def verify_value(self, value: datetime.date):
+    def verify_value(self, value: datetime.date) -> None:
         """
         Checks if the birthdate is not in the future. Raises exception if the date is in the future.
-        :param value: datetime object
+
+        :param value: birthdate
         """
 
         if value > datetime.datetime.now().date():
@@ -98,14 +99,20 @@ class Email(Field):
     """
 
     @classmethod
-    def is_valid(cls, value: str):
+    def is_valid(cls, value: str) -> None | Match[str]:
+        """
+        Checks if the email is valid.
+
+        :param value: email to check
+        """
+
         return match(r"[a-zA-Z][a-zA-Z_.0-9]+@[a-zA-Z_]+?\.[a-zA-Z]{2,}", value)
 
 
 class Record:
     """
-    A record about a person in an address book. Name field is compulsory, while phones and birthday fields are optional
-    and can be omitted.
+    A record about a person in an address book. Name field is compulsory, while other fields are optional and can
+    be omitted.
     """
 
     def __init__(self, name: str):
@@ -119,42 +126,22 @@ class Record:
 
     def add_phone(self, phone: str) -> None:
         """
-        Adds a phone to the record.
+        Adds a phone to the record. Raises exception if the phone is in a wrong format.
+
         :param phone: a phone number
         """
+
         if Phone.is_valid(phone):
             phone_object = Phone(phone)
             self.phones.append(phone_object)
         else:
             raise ValueError(f"Phone must be in format +380XXXXXXXXX/380XXXXXXXXX/0XXXXXXXXX")
 
-    def delete_phone(self, phone: str) -> None:
-        """
-        Deletes a phone from the record. Raises exception if there is no such phone in the record.
-        :param phone: a phone number to delete
-        """
-
-        phone = self.find_phone(phone)
-        if phone:
-            self.phones.remove(phone)
-        else:
-            raise ValueError("The given phone is not in a list.")
-
-    def find_phone(self, phone: str) -> Phone:
-        """
-        Finds and returns a phone from the phone list.
-        :param phone: phone to search
-        :return: an entry in a phone list corresponding to this phone
-        """
-
-        for phone_object in self.phones:
-            if phone_object.value == phone:
-                return phone_object
-
     def count_days_to_birthday(self) -> str:
         """
         Counts the days left to the birthdate of the given person.
-        :return: a message that contains a number of days left or a reminder that a person has their birthday today
+
+        :return: a number of days left
         """
 
         today = datetime.datetime.now().date()
@@ -170,9 +157,10 @@ class Record:
             difference = next_years_birthday - today
             return difference.days
 
-    def add_birthday(self, birthday: str):
+    def add_birthday(self, birthday: str) -> None:
         """
-        Adds a birthdate to the record.
+        Adds a birthdate to the record. Raises exception if birthdate is in a wrong format.
+
         :param birthday: datetime object
         """
         try:
@@ -182,14 +170,26 @@ class Record:
 
         self.birthday = Birthday(birthday_date)
 
-    def add_email(self, email: str):
+    def add_email(self, email: str) -> None:
+        """
+        Adds email to the record. Raises exception if an email is in a wrong format.
+
+        :param email: email to add
+        """
+
         if Email.is_valid(email):
             email_object = Email(email)
             self.email = email_object
         else:
             raise ValueError("Your email seems to be invalid.")
 
-    def add_address(self, *args):
+    def add_address(self, *args: str) -> None:
+        """
+        Adds address to the record.
+
+        :param args: contact's address
+        """
+
         self.address = " ".join(args)
 
     def __str__(self):
