@@ -53,5 +53,9 @@ class App:
         return command, args
 
 
-if __name__ == "__main__":
+def run_app():
     App().run()
+
+
+if __name__ == "__main__":
+    run_app()

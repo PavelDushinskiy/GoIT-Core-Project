@@ -5,8 +5,8 @@ from features.files import Files
 from features.notebook import Notebook
 from features.bot_feature import BotFeature
 
-ADDRESS_BOOK_FILE = "assistant-bot/address_book.bin"
-NOTEBOOK_FILE = "assistant-bot/notebook.bin"
+ADDRESS_BOOK_FILE = "assistant-bot/assistant-bot/address_book.bin"
+NOTEBOOK_FILE = "assistant-bot/assistant-bot/notebook.bin"
 
 
 class AssistantBot:
@@ -98,5 +98,5 @@ class AssistantBot:
 
     def backup_data(self):
         for handler in self.features:
-            if isinstance(handler, BotFeature):
-                BotFeature.backup_data(handler)
+            if handler.data:
+                handler.data.backup_data(handler)

@@ -3,6 +3,7 @@ from datetime import date
 import re
 
 from features.bot_feature import BotFeature
+from features.records_container import RecordsContainer
 
 NAME_REGEX = re.compile(r"[a-zA-Zа-яА-Я0-9,.'\w]{2,30}")
 
@@ -68,15 +69,16 @@ class Notebook(BotFeature):
         """
         An app feature that helps users to manage their notes.
         """
+        self.save_file = save_file
+        self.data = RecordsContainer(save_file)
+
         super().__init__({
             "make": self.make_note,
             "change": self.change_note,
-            "remove": self.remove_record,
-            "show": self.show_all,
-            "search": self.search_record
+            "remove": self.data.remove_record,
+            "show": self.data.show_all,
+            "search": self.data.search_record
             })
-        self.save_file = save_file
-        self.data = BotFeature.load_data(save_file) or {}
 
     @staticmethod
     def name():
@@ -85,18 +87,18 @@ class Notebook(BotFeature):
     def make_note(self):
         title = input('Enter the title: ').strip()
 
-        if self.record_exists(title):
+        if self.data.record_exists(title):
             return f"Note {title} already exists! Try another name."
 
         text = input('Enter the text: ')
         tags = input('Enter the tags: ').strip().split()
         note = NoteRecord(title, text, tags)
-        self.add_record(note)
+        self.data.add_record(note)
         return f"Note {title} was created successfully!"
 
     def change_note(self, *args: str):
         title = " ".join(args)
-        if self.record_exists(title):
+        if self.data.record_exists(title):
             note_to_change = self.data[title]
             while True:
                 to_change = input("What do you want to change? Type title, tags or text: ")
@@ -106,8 +108,8 @@ class Notebook(BotFeature):
                 elif to_change.lower() == "title":
                     new_title = input("Enter a new title: ")
                     note_to_change.change_title(new_title)
-                    self.remove_note(title)
-                    self.add_record(note_to_change)
+                    self.data.remove_record(title)
+                    self.data.add_record(note_to_change)
                 elif to_change.lower() == "tags":
                     new_tags = input("Enter new tags: ")
                     note_to_change.change_tags(new_tags)

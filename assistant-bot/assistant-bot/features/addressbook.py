@@ -1,5 +1,6 @@
 from features.bot_feature import BotFeature
-from addressbook_fields import Record
+from features.addressbook_fields import Record
+from features.records_container import RecordsContainer
 
 DATE_FORMAT = "%d.%m.%Y"
 
@@ -10,28 +11,28 @@ class AddressBook(BotFeature):
     """
 
     def __init__(self, save_file: str):
+        self.save_file = save_file
+        self.data = RecordsContainer(save_file)
+
         super().__init__({
             "add": self.add_contact,
             "change": self.change_contact,
-            "remove": self.remove_record,
-            "show": self.show_all,
+            "remove": self.data.remove_record,
+            "show": self.data.show_all,
             "birthdays": self.check_birthdays,
-            "search": self.search_record
+            "search": self.data.search_record
         })
-
-        self.save_file = save_file
-        self.data = BotFeature.load_data(save_file) or {}
 
     def name(self):
         return "contacts"
 
     def add_contact(self):
         name = input("Enter the name: ").strip()
-        if self.record_exists(name):
+        if self.data.record_exists(name):
             return ValueError("This name is already in your phonebook. If you want to change the phone number, "
                               "type 'change'.")
         record = Record(name)
-        self.add_record(record)
+        self.data.add_record(record)
 
         phones = input("Enter the phone or phones: ").strip().split()
         if phones:
@@ -54,7 +55,7 @@ class AddressBook(BotFeature):
 
     def change_contact(self, *args: str):
         name = " ".join(args)
-        if self.record_exists(name):
+        if self.data.record_exists(name):
             contact_to_change = self.data[name]
             while True:
                 to_change = input("What do you want to change? Type phone, email or address: ")
@@ -66,8 +67,8 @@ class AddressBook(BotFeature):
                     new_phone = input("Enter a new phone: ")
                     contact_to_change.delete_phone(old_phone)
                     contact_to_change.add_phone(new_phone)
-                    self.remove_contact(name)
-                    self.add_record(contact_to_change)
+                    self.data.remove_record(name)
+                    self.data.add_record(contact_to_change)
                 elif to_change.lower() == "email":
                     new_email = input("Enter a new email: ")
                     contact_to_change.add_email(new_email)

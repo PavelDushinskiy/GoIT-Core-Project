@@ -1,15 +1,10 @@
-from typing import List, Callable
 import pickle
 
 
-class BotFeature:
-    """
-    A base class that handles commands for the features.
-    """
+class RecordsContainer:
 
-    def __init__(self, command_handlers: dict[str, Callable]):
-        self.command_handlers = command_handlers
-        self.data = {}
+    def __init__(self, save_file):
+        self.data = RecordsContainer.load_data(save_file) or {}
 
     @classmethod
     def load_data(cls, filepath):
@@ -18,18 +13,8 @@ class BotFeature:
                 loaded_data = pickle.load(f)
                 return loaded_data
             except Exception:
-                print("Can't load data from file")
+                print(f"Can't load data from file {filepath}")
                 return None
-
-    def name(self):
-        pass
-
-    def handle_command(self, command: str, *args: List[str]):
-        handler = self.command_handlers.get(command, None)
-        if handler:
-            return handler(*args)
-        else:
-            raise ValueError("Unexpected command")
 
     @staticmethod
     def backup_data(handler):
