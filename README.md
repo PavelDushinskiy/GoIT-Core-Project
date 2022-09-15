@@ -11,7 +11,7 @@
 pip install -i https://test.pypi.org/simple/ helper-bot-team-1
 ```
 
-**To start the bot use command 'helper-bot' in terminal**
+**To start the bot use command 'helper_bot' in terminal**
 
 ***What our assistant can do:***
 1. *Save contacts with names, addresses, phone numbers, email and birthdays to the contacts book.*
