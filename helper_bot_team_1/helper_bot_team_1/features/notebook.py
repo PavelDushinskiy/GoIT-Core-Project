@@ -2,8 +2,8 @@ from typing import Any, List
 from datetime import date
 import re
 
-from helper_bot_team_1.features.bot_feature import BotFeature
-from helper_bot_team_1.features.records_container import RecordsContainer
+from features.bot_feature import BotFeature
+from features.records_container import RecordsContainer
 
 NAME_REGEX = re.compile(r"[a-zA-Zа-яА-Я0-9,.'\w]{2,30}")
 

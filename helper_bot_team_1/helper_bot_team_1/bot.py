@@ -1,8 +1,8 @@
 from typing import List, Any, Callable
 
-from helper_bot_team_1.features.addressbook import AddressBook
-from helper_bot_team_1.features.files import Files
-from helper_bot_team_1.features.notebook import Notebook
+from features.addressbook import AddressBook
+from features.files import Files
+from features.notebook import Notebook
 
 ADDRESS_BOOK_FILE = "address_book.bin"
 NOTEBOOK_FILE = "notebook.bin"
@@ -26,11 +26,18 @@ class AssistantBot:
         A decorator that catches the domain-level exceptions and returns human-readable error message.
         """
 
+        def processing_of_err(err_message: str) -> str:
+            message = err_message[err_message.find(' '):]
+            if message.find(':') < 0:
+                return message
+            else:
+                return message[:message.find(':')]
+
         def exception_handler(*args, **kwargs):
             try:
                 result = func(*args, **kwargs)
             except TypeError as err:
-                return f"Invalid input, some info is missing: {err}"
+                return f"Invalid input, some info is wrong: {processing_of_err(str(err))}"
             except KeyError as err:
                 return f"Sorry: {err}"
             except ValueError as err:

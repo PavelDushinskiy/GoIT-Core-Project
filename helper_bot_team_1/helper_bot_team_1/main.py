@@ -2,7 +2,7 @@ from typing import Tuple
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from helper_bot_team_1.bot import AssistantBot
+from bot import AssistantBot
 
 
 class App:
