@@ -1,5 +1,5 @@
 from typing import List, Callable
-from abc import ABC,abstractmethod
+from abc import ABC, abstractmethod
 
 
 class BotFeature(ABC):
